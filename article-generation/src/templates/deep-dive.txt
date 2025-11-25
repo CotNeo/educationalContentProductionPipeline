@@ -1,0 +1,29 @@
+Başlık: {{TITLE}}
+
+1. Problem Tanımı
+- Gerçek bir senaryo ile başla.
+- Ölçek, yük, kullanıcı sayısı vb. parametreleri belirt.
+
+2. Kavramın Kısa Tanımı
+- 4–5 cümlede sade tanım.
+
+3. İç Çalışma Mantığı
+- Veri akışını ve ana bileşenleri açıkla.
+- Diyagramı metinle tarif et (ör: API Gateway → Service → DB → Queue).
+
+4. Bileşenler
+- Her bileşen için alt başlık: görev, avantaj, dezavantaj.
+
+5. Artılar / Eksiler
+- Tablo veya madde listesi ile karşılaştır.
+
+6. Kullanım Senaryoları
+- Gerçek ürün ve sistemlerden örnekler ver.
+
+7. Performans, Güvenlik ve Ölçeklenebilirlik
+- Her birini ayrı alt başlıkta işle.
+
+8. Sonuç
+- 3 maddelik teknik özet.
+- Hangi durumda bu yaklaşım seçilmeli, hangi durumda seçilmemeli.
+

@@ -1,0 +1,29 @@
+{
+  "name": "pdf-service",
+  "version": "1.0.0",
+  "description": "Service to convert markdown articles to PDF",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "convert": "node src/index.js",
+    "convert:single": "node src/convertSingle.js"
+  },
+  "keywords": [
+    "pdf",
+    "markdown",
+    "converter",
+    "articles"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "md-to-pdf": "^5.2.3"
+  }
+}
+
+
+
+
+
+
+

@@ -1,0 +1,36 @@
+Title: {{TITLE}}
+
+1. Introduction
+- Why are we learning this topic?
+- Start with a real-world problem or scenario.
+- Tell the reader what they will gain from this article in 3 points.
+
+2. Fundamentals
+- Explain the concept in very simple language.
+- Use a simple analogy (e.g., restaurant, shipping, bank, etc.).
+- Then provide the technical definition.
+
+3. Key Concepts
+- Open at most 3-5 subheadings.
+- In each subheading: definition + small example.
+
+4. Code Example or Mini Demo
+- Write a realistic and useful short code example.
+- First explain what the problem is, then show the solution.
+- Explain the code block step by step.
+
+5. Real-World Use Cases
+- Provide 2-4 scenarios from Frontend / Backend / DevOps / Database perspectives.
+- Think of examples from production environments if possible.
+
+6. Common Mistakes
+- Write common mistakes in 3-5 bullet points.
+- Briefly explain why each is a problem.
+
+7. Best Practices
+- List best practices in terms of performance, readability, and maintainability.
+
+8. Conclusion
+- Write a 3-point mini summary.
+- Offer the reader suggestions for next steps (what topic to study, what project to build).
+

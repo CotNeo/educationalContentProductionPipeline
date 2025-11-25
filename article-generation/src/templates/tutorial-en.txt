@@ -1,0 +1,28 @@
+Title: {{TITLE}}
+
+1. Introduction
+- Describe what will be achieved at the end of this tutorial.
+- Briefly explain what problem it solves.
+
+2. Prerequisites
+- Required technologies, versions, and knowledge level.
+- Tools that need to be installed (Node, Docker, etc.).
+
+3. Project Structure
+- Summarize the folder structure.
+
+4. Step-by-Step Implementation
+- Explain each step in a separate heading (4.1, 4.2, 4.3 ...).
+- In each step: brief explanation + code + expected output.
+
+5. Final Version
+- Provide a summary of the complete working project.
+- Optionally leave a placeholder for GitHub repo link.
+
+6. Debugging
+- Write a few of the most common errors and their solutions.
+
+7. Conclusion
+- Summarize the concepts learned.
+- Write a suggestion for the next feature that could be developed.
+

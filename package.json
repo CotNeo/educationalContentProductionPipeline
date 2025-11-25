@@ -1,0 +1,26 @@
+{
+  "name": "content-production-pipeline",
+  "version": "1.0.0",
+  "description": "Interactive CLI for Educational Content Production Pipeline",
+  "type": "module",
+  "main": "cli.js",
+  "bin": {
+    "content-pipeline": "./cli.js"
+  },
+  "scripts": {
+    "start": "node cli.js",
+    "cli": "node cli.js"
+  },
+  "keywords": [
+    "content",
+    "pipeline",
+    "video",
+    "tts",
+    "pdf",
+    "article",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+

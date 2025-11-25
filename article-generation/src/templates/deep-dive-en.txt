@@ -1,0 +1,29 @@
+Title: {{TITLE}}
+
+1. Problem Definition
+- Start with a real-world scenario.
+- Specify scale, load, number of users, etc.
+
+2. Brief Concept Definition
+- Simple definition in 4-5 sentences.
+
+3. Internal Working Logic
+- Explain data flow and main components.
+- Describe the diagram in text (e.g., API Gateway → Service → DB → Queue).
+
+4. Components
+- For each component, create a subheading: purpose, advantages, disadvantages.
+
+5. Pros / Cons
+- Compare using a table or bullet list.
+
+6. Use Cases
+- Provide examples from real products and systems.
+
+7. Performance, Security, and Scalability
+- Address each in a separate subheading.
+
+8. Conclusion
+- 3-point technical summary.
+- When to choose this approach, when not to choose it.
+

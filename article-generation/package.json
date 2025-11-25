@@ -1,0 +1,28 @@
+{
+  "name": "medium-article-bot",
+  "version": "2.0.0",
+  "description": "Automated Medium article generation using local DeepSeek R1 via Ollama. Generate technical articles with CLI or batch processing.",
+  "type": "module",
+  "main": "src/generateArticles.js",
+  "scripts": {
+    "generate": "node src/generateArticles.js",
+    "generate:single": "node src/generateSingle.js"
+  },
+  "keywords": [
+    "medium",
+    "article",
+    "ollama",
+    "deepseek",
+    "automation",
+    "content-generation",
+    "local-llm"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2",
+    "slugify": "^1.6.6"
+  }
+}
+

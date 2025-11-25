@@ -1,0 +1,36 @@
+Başlık: {{TITLE}}
+
+1. Giriş
+- Konuyu neden öğreniyoruz?
+- Gerçek hayattaki bir problem veya senaryo ile giriş yap.
+- Okura bu makaleden ne kazanacağını 3 maddede söyle.
+
+2. Konunun Temeli
+- Kavramı çok sade bir dille açıkla.
+- Basit bir benzetme kullan (ör: restoran, kargo, banka vb.).
+- Ardından teknik tanımı ver.
+
+3. Önemli Kavramlar
+- En fazla 3–5 alt başlık aç.
+- Her alt başlıkta: tanım + küçük örnek ver.
+
+4. Örnek Kod veya Mini Demo
+- Gerçekçi ve işe yarar kısa bir kod örneği yaz.
+- Önce problemin ne olduğunu açıkla, sonra çözümü göster.
+- Kod blogunu adım adım açıkla.
+
+5. Gerçek Hayatta Kullanım Senaryoları
+- Frontend / Backend / DevOps / Database açısından 2–4 senaryo ver.
+- Mümkünse production ortamından örnek düşün.
+
+6. En Sık Yapılan Hatalar
+- 3–5 madde halinde yaygın hataları yaz.
+- Her birinin neden problem olduğunu kısa açıkla.
+
+7. Best Practices
+- Performans, okunabilirlik ve sürdürülebilirlik açısından en iyi pratikleri listele.
+
+8. Sonuç
+- 3 maddelik mini özet yaz.
+- Okura bir sonraki adım için öneri sun (hangi konuyu çalışmalı, hangi projeyi yapmalı).
+

@@ -1,0 +1,28 @@
+Başlık: {{TITLE}}
+
+1. Giriş
+- Bu tutorial sonunda ortaya çıkacak sonucu anlat.
+- Hangi problemi çözdüğünü kısaca açıkla.
+
+2. Ön Gereksinimler
+- Gerekli teknolojiler, versiyonlar ve bilgi seviyesi.
+- Kurulması gereken araçlar (Node, Docker vb.).
+
+3. Proje Yapısı
+- Klasör yapısını özetle.
+
+4. Adım Adım Uygulama
+- Her adımı ayrı başlıkta anlat (4.1, 4.2, 4.3 ...).
+- Her adımda: kısa açıklama + kod + beklenen çıktı.
+
+5. Final Versiyon
+- Tam proje çalışma özetini ver.
+- İstersen GitHub repo linki için placeholder bırak.
+
+6. Hata Ayıklama (Debugging)
+- En sık görülebilecek birkaç hatayı ve çözümünü yaz.
+
+7. Sonuç
+- Öğrenilen kavramları özetle.
+- Bir sonraki geliştirilebilecek feature önerisini yaz.
+

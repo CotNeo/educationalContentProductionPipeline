@@ -1,0 +1,27 @@
+[
+  {
+    "slug": "js-event-loop",
+    "title": "JavaScript Event Loop: 2025 İçin En Basit Anlatım",
+    "language": "tr",
+    "skeleton": "educational",
+    "audience": "junior-mid frontend developer",
+    "readingTime": "7"
+  },
+  {
+    "slug": "react-state-management-modern",
+    "title": "Modern React State Management: Context, Redux, Zustand ve Ötesi",
+    "language": "tr",
+    "skeleton": "deep-dive",
+    "audience": "mid-level react developer",
+    "readingTime": "10"
+  },
+  {
+    "slug": "node-microservices-intro",
+    "title": "Node.js ile Microservice Mimarisi: Adım Adım Giriş",
+    "language": "tr",
+    "skeleton": "tutorial",
+    "audience": "backend odaklı full-stack developer",
+    "readingTime": "8"
+  }
+]
+

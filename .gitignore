@@ -1,0 +1,178 @@
+# ============================================
+# Educational Content Production Pipeline
+# Comprehensive .gitignore
+# ============================================
+
+# ============================================
+# Node.js Dependencies
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ============================================
+# Python
+# ============================================
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Python distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ============================================
+# Environment Variables & Secrets
+# ============================================
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# ============================================
+# Generated Output Files
+# ============================================
+# Articles (optional - comment out if you want to track them)
+# article-generation/articles/
+# Uncomment above if you want to ignore generated articles
+
+# PDF outputs
+pdf-service/output/
+*.pdf
+
+# Video scripts
+video-scripter-service/output/
+# Keep example scripts if needed
+
+# TTS audio outputs
+tts-service/out/
+*.wav
+*.mp3
+*.ogg
+
+# Video outputs
+video-generation-service/output/
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Temporary video files
+/tmp/
+temp/
+*.tmp
+
+# ============================================
+# Voice Samples (Optional - exclude if sensitive)
+# ============================================
+# tts-service/voice/
+# Uncomment above if voice samples should not be in repo
+
+# ============================================
+# Logs
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ============================================
+# IDE & Editor Files
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# OS Files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ============================================
+# Model Files & Large Data
+# ============================================
+*.model
+*.h5
+*.pkl
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+
+# Hugging Face cache
+.cache/
+huggingface/
+
+# ============================================
+# Testing & Coverage
+# ============================================
+coverage/
+.nyc_output/
+.coverage
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# ============================================
+# Build & Dist
+# ============================================
+build/
+dist/
+out/
+*.tsbuildinfo
+
+# ============================================
+# Ollama Models (if stored locally)
+# ============================================
+.ollama/
+models/
+
+# ============================================
+# Local Configuration Overrides
+# ============================================
+config.local.json
+*.local.json
+

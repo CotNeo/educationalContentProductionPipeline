@@ -1,0 +1,29 @@
+{
+  "name": "video-scripter-service",
+  "version": "1.0.0",
+  "description": "Service to convert markdown articles to video scripts",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "generate": "node src/index.js",
+    "generate:single": "node src/generateSingle.js"
+  },
+  "keywords": [
+    "video",
+    "script",
+    "markdown",
+    "converter",
+    "articles"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
+
+
+
+
+
+
