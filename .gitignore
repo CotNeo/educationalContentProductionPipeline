@@ -176,3 +176,9 @@ models/
 config.local.json
 *.local.json
 
+
+# ============================================
+# Local Documentation
+# ============================================
+GITHUB_SETUP.md
+PUSH_NOW.md
