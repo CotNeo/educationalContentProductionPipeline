@@ -6,6 +6,7 @@ Creates high-quality visual elements for each scene.
 from PIL import Image, ImageDraw, ImageFont
 import math
 import os
+import re
 from typing import Tuple, Optional, List, Dict
 from unifiedScriptParser import Scene, CodeBlock
 
@@ -286,14 +287,95 @@ def render_title_card(
     return bg
 
 
+def extract_diagram_elements_from_scene(scene) -> List[Dict]:
+    """
+    Extract meaningful diagram elements from scene narration and visual description.
+    Returns list of box labels for flowchart.
+    """
+    import re
+    
+    elements = []
+    text = (scene.narration + " " + scene.visual).lower()
+    
+    # Pattern 1: Technology stack components (MERN, LAMP, etc.)
+    stack_patterns = [
+        r'(mongodb|express|react|node\.?js|mern)',
+        r'(mysql|apache|php|python|django|flask)',
+        r'(angular|vue|svelte)',
+    ]
+    
+    # Pattern 2: Process flow keywords
+    process_keywords = ['stores', 'handles', 'routes', 'manages', 'delivers', 'powers', 'creates', 'builds']
+    
+    # Pattern 3: Extract entities from narration (capitalized words, tech names)
+    narration_upper = scene.narration
+    # Find technology names and key concepts
+    tech_names = re.findall(r'\b([A-Z][a-z]+(?:\.[a-z]+)?(?:\.js)?)\b', narration_upper)
+    # Remove common words
+    tech_names = [t for t in tech_names if t not in ['The', 'This', 'Let', 'Here', 'How', 'What', 'When', 'Where', 'Why']]
+    
+    # Pattern 4: Extract from visual description
+    visual_lower = scene.visual.lower()
+    if "circles" in visual_lower or "components" in visual_lower:
+        # Try to extract component names
+        component_match = re.search(r'(mongodb|express|react|node\.?js|mern)', visual_lower, re.IGNORECASE)
+        if component_match:
+            # Extract all mentioned technologies
+            all_techs = re.findall(r'\b(mongodb|express\.?js|react|node\.?js|mern)\b', visual_lower, re.IGNORECASE)
+            elements = [{"label": t.capitalize().replace('.js', '.js').replace('express', 'Express.js').replace('nodejs', 'Node.js')} for t in set(all_techs)]
+    
+    # Pattern 5: Extract flow from narration (X stores Y, X handles Z, etc.)
+    if not elements:
+        # Look for action patterns: "MongoDB stores data", "Express handles APIs"
+        flow_pattern = re.findall(r'([A-Z][a-z]+(?:\.[a-z]+)?)\s+(stores|handles|routes|manages|delivers|powers|creates|builds)\s+([a-z\s]+)', narration_upper)
+        if flow_pattern:
+            for tech, action, obj in flow_pattern[:4]:  # Max 4 elements
+                label = f"{tech}\n{action.capitalize()}\n{obj[:15]}"
+                elements.append({"label": label})
+    
+    # Pattern 6: Extract from visual description explicitly
+    if "flowchart" in visual_lower or "flow" in visual_lower:
+        # Try to extract flow elements
+        flow_match = re.search(r'(from\s+([A-Z][a-z]+)\s+to\s+([A-Z][a-z]+))', visual_lower)
+        if flow_match:
+            elements = [
+                {"label": flow_match.group(2).capitalize()},
+                {"label": flow_match.group(3).capitalize()}
+            ]
+    
+    # Pattern 7: Use tech names found
+    if not elements and tech_names:
+        elements = [{"label": t} for t in tech_names[:4]]
+    
+    # Pattern 8: Fallback - extract key nouns from narration
+    if not elements:
+        # Extract capitalized words that might be entities
+        nouns = re.findall(r'\b([A-Z][a-z]{3,})\b', narration_upper)
+        nouns = [n for n in nouns if n not in ['The', 'This', 'Let', 'Here', 'How', 'What', 'When', 'Where', 'Why', 'Imagine', 'Scalability']]
+        if nouns:
+            elements = [{"label": n} for n in nouns[:4]]
+    
+    # Default fallback
+    if not elements:
+        # Extract first 3-4 key words from narration
+        words = narration_upper.split()[:10]
+        key_words = [w.capitalize() for w in words if len(w) > 4][:4]
+        if key_words:
+            elements = [{"label": w} for w in key_words]
+    
+    return elements[:4]  # Max 4 boxes
+
+
 def render_diagram(
     diagram_type: str,
     elements: List[Dict],
+    scene=None,
     width: int = VIDEO_WIDTH,
     height: int = VIDEO_HEIGHT
 ) -> Image.Image:
     """
-    Render a minimal, animated diagram.
+    Render a dynamic diagram based on scene content.
+    Extracts meaningful elements from scene narration and visual description.
     """
     # Light background for diagrams
     bg = create_gradient_background(
@@ -304,21 +386,42 @@ def render_diagram(
     
     draw = ImageDraw.Draw(bg)
     
+    # Extract elements from scene if provided
+    if scene and not elements:
+        elements = extract_diagram_elements_from_scene(scene)
+    
+    # If still no elements, use default
+    if not elements:
+        elements = [
+            {"label": "Input"},
+            {"label": "Process"},
+            {"label": "Output"}
+        ]
+    
     # Draw flowchart-style diagram
-    if diagram_type == "flowchart":
-        # Example: Simple flowchart
-        box_width = 300
-        box_height = 100
-        start_x = width // 4
+    if diagram_type == "flowchart" or not diagram_type:
+        box_width = 280
+        box_height = 120
+        spacing = 80
+        
+        # Calculate total width needed
+        total_width = len(elements) * box_width + (len(elements) - 1) * spacing
+        start_x = (width - total_width) // 2
         y = height // 3
         
-        boxes = [
-            {"label": "Event", "x": start_x, "y": y},
-            {"label": "Handler", "x": start_x + box_width + 100, "y": y},
-            {"label": "Action", "x": start_x + (box_width + 100) * 2, "y": y},
-        ]
+        boxes = []
+        for i, elem in enumerate(elements):
+            label = elem.get("label", f"Step {i+1}")
+            # Truncate long labels
+            if len(label) > 20:
+                label = label[:17] + "..."
+            boxes.append({
+                "label": label,
+                "x": start_x + i * (box_width + spacing),
+                "y": y
+            })
         
-        for box in boxes:
+        for i, box in enumerate(boxes):
             # Box with rounded corners effect
             draw.rectangle(
                 [box['x'], box['y'], box['x'] + box_width, box['y'] + box_height],
@@ -327,26 +430,30 @@ def render_diagram(
                 width=3
             )
             
-            # Label
-            font = get_font(36, bold=True)
-            label_bbox = draw.textbbox((0, 0), box['label'], font=font)
-            label_w = label_bbox[2] - label_bbox[0]
-            label_x = box['x'] + (box_width - label_w) // 2
-            label_y = box['y'] + (box_height - (label_bbox[3] - label_bbox[1])) // 2
+            # Label - handle multi-line
+            font = get_font(32, bold=True)
+            label_lines = box['label'].split('\n')[:2]  # Max 2 lines
+            line_height = 40
             
-            draw.text(
-                (label_x, label_y),
-                box['label'],
-                fill=COLORS['text_light'],
-                font=font
-            )
+            for line_idx, line in enumerate(label_lines):
+                label_bbox = draw.textbbox((0, 0), line, font=font)
+                label_w = label_bbox[2] - label_bbox[0]
+                label_x = box['x'] + (box_width - label_w) // 2
+                label_y = box['y'] + (box_height - len(label_lines) * line_height) // 2 + line_idx * line_height
+                
+                draw.text(
+                    (label_x, label_y),
+                    line,
+                    fill=COLORS['text_light'],
+                    font=font
+                )
             
             # Arrow to next
-            if boxes.index(box) < len(boxes) - 1:
+            if i < len(boxes) - 1:
                 arrow_x = box['x'] + box_width
                 arrow_y = box['y'] + box_height // 2
-                next_x = boxes[boxes.index(box) + 1]['x']
-                next_y = boxes[boxes.index(box) + 1]['y'] + box_height // 2
+                next_x = boxes[i + 1]['x']
+                next_y = boxes[i + 1]['y'] + box_height // 2
                 
                 # Arrow line
                 draw.line(
@@ -391,15 +498,31 @@ def render_text_overlay(
         bullet_matches = re.findall(r'[-•]\s*([^\n]+)', visual_description)
         if bullet_matches:
             bullet_items = [b.strip() for b in bullet_matches[:6]]
+        
+        # Also look for numbered lists
+        numbered_matches = re.findall(r'\d+\.\s*([^\n]+)', visual_description)
+        if numbered_matches:
+            bullet_items.extend([b.strip() for b in numbered_matches[:6]])
     
-    # If no bullets in visual, extract from narration
+    # If no bullets in visual, extract key concepts from narration
     if not bullet_items:
-        # Split narration by sentences
-        sentences = narration.split('.')
-        for sent in sentences[:4]:  # Max 4 items
-            sent = sent.strip()
-            if sent and len(sent) > 5:
-                bullet_items.append(sent)
+        import re
+        # Extract key phrases: "X does Y", "X is Y", "X provides Y"
+        key_phrases = re.findall(r'([A-Z][a-z]+(?:\.[a-z]+)?)\s+(stores|handles|routes|manages|delivers|powers|creates|builds|is|provides|offers|enables)\s+([^.,]+)', narration)
+        if key_phrases:
+            for tech, action, obj in key_phrases[:5]:
+                bullet_items.append(f"{tech} {action} {obj.strip()}")
+        
+        # If still no items, extract meaningful sentences
+        if not bullet_items:
+            sentences = narration.split('.')
+            for sent in sentences[:5]:  # Max 5 items
+                sent = sent.strip()
+                # Filter out very short or meaningless sentences
+                if sent and len(sent) > 10 and not sent.lower().startswith(('imagine', 'let', 'here', 'now')):
+                    # Clean up: remove quotes, extra spaces
+                    sent = re.sub(r'^["\']|["\']$', '', sent).strip()
+                    bullet_items.append(sent)
     
     # Limit to 5 items max
     bullet_items = bullet_items[:5]
@@ -589,32 +712,50 @@ def render_scene_base(scene: Scene, frame_time: float = 0.0) -> Image.Image:
     visual_lower = scene.visual.lower()
     
     # Render based on visual description - priority order matters!
-    # Check text overlay FIRST (before code) to handle scene 8, 9 correctly
+    # More flexible matching to handle various visual descriptions
     
-    # Priority order: Text overlay > Code > Diagram > Title card > Logo > Default
+    # Priority order: Code > Text overlay > Diagram > Title card > Logo > Default (text overlay)
     
-    # 1. Text/bullet overlay scenes (scene 8, 9) - MUST check first
-    if ("text overlay" in visual_lower or ("bullet" in visual_lower and "code" not in visual_lower)) and not scene.code:
+    # 1. Code scenes - must have actual code block OR "code" in visual description
+    if scene.code or ("code" in visual_lower and ("snippet" in visual_lower or "appears" in visual_lower)):
+        if scene.code:
+            code_img = render_code_editor(
+                scene.code.content,
+                dark_mode="dark" in bg_type or "light" not in bg_type
+            )
+            bg.paste(code_img, (0, 0))
+        else:
+            # Code mentioned but no code block - show placeholder or text overlay
+            text_img = render_text_overlay(scene.narration, scene.visual)
+            bg.paste(text_img, (0, 0))
+    
+    # 2. Text/bullet overlay scenes - bullet points, infographic, tips
+    elif ("text overlay" in visual_lower or 
+          "bullet" in visual_lower or 
+          "infographic" in visual_lower or 
+          "tips" in visual_lower or
+          "optimization" in visual_lower):
         text_img = render_text_overlay(scene.narration, scene.visual)
         bg.paste(text_img, (0, 0))
     
-    # 2. Code scenes - must have actual code block
-    elif scene.code and ("code" in visual_lower or scene.code):
-        code_img = render_code_editor(
-            scene.code.content,
-            dark_mode="dark" in bg_type or "light" not in bg_type
-        )
-        bg.paste(code_img, (0, 0))
-    
-    # 3. Diagram/flowchart scenes (scene 5, 6)
-    elif "diagram" in visual_lower or "flowchart" in visual_lower:
-        diagram_img = render_diagram("flowchart", [])
+    # 3. Diagram/flowchart scenes - flowchart, diagram, circles, panels, scale
+    elif ("diagram" in visual_lower or 
+          "flowchart" in visual_lower or 
+          "circles" in visual_lower or 
+          "panels" in visual_lower or
+          "scale" in visual_lower or
+          "arrows" in visual_lower or
+          "flow" in visual_lower):
+        # Pass scene to extract meaningful diagram elements from narration
+        diagram_img = render_diagram("flowchart", [], scene=scene)
         bg.paste(diagram_img, (0, 0))
     
-    # 4. Title card scenes (scene 2)
-    elif ("title" in visual_lower or "card" in visual_lower) and "text overlay" not in visual_lower:
-        title = "JavaScript"  # Default
-        if "javascript" in visual_lower:
+    # 4. Title card scenes
+    elif ("title" in visual_lower or "card" in visual_lower):
+        title = "MERN Stack"  # Default
+        if "mern" in visual_lower:
+            title = "MERN Stack"
+        elif "javascript" in visual_lower:
             title = "JavaScript"
         elif scene.narration:
             first_sentence = scene.narration.split('.')[0].strip()
@@ -625,14 +766,38 @@ def render_scene_base(scene: Scene, frame_time: float = 0.0) -> Image.Image:
         title_img = render_title_card(title, style=scene.video_settings.mood)
         bg.paste(title_img, (0, 0))
     
-    # 5. Logo/animation scenes (scene 1) - ABSOLUTELY NO TEXT, just background
-    elif "logo" in visual_lower or ("animated" in visual_lower and "diagram" not in visual_lower and "text" not in visual_lower):
-        # Clean minimal: Just background, NO text on screen (subtitle only)
-        pass
+    # 5. Logo/animation scenes - logo, animated text (but not if it's just text overlay)
+    elif ("logo" in visual_lower or 
+          ("animated" in visual_lower and "text" in visual_lower and "logo" not in visual_lower)):
+        # For animated text without logo, show title card instead
+        if "animated" in visual_lower and "text" in visual_lower:
+            # Extract title from narration or visual
+            title = "MERN"
+            if "mern" in visual_lower:
+                # Try to extract MERN from visual description
+                mern_match = re.search(r"'?([A-Z]{4,})'?", visual_lower)
+                if mern_match:
+                    title = mern_match.group(1).upper()
+            title_img = render_title_card(title, style=scene.video_settings.mood)
+            bg.paste(title_img, (0, 0))
+        else:
+            # Just logo - minimal background
+            pass
     
-    # 6. Default: Clean background, NO text
+    # 6. Screenshots/images scenes - show text overlay with narration
+    elif ("screenshot" in visual_lower or "image" in visual_lower or "app" in visual_lower):
+        text_img = render_text_overlay(scene.narration, scene.visual)
+        bg.paste(text_img, (0, 0))
+    
+    # 7. Call-to-action scenes - show text overlay
+    elif ("call-to-action" in visual_lower or "button" in visual_lower or "cta" in visual_lower):
+        text_img = render_text_overlay(scene.narration, scene.visual)
+        bg.paste(text_img, (0, 0))
+    
+    # 8. Default: Show text overlay for any other case (better than blank screen)
     else:
-        pass
+        text_img = render_text_overlay(scene.narration, scene.visual)
+        bg.paste(text_img, (0, 0))
     
     # Always add narration as subtitle at bottom (ONLY place for narration text)
     if scene.narration:

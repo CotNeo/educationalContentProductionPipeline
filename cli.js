@@ -446,17 +446,23 @@ async function generateTTS() {
     return;
   }
 
+  // Ask for CPU mode if GPU memory issues
+  console.log();
+  const useCpu = await question('Use CPU mode? (y/N) [N]: ');
+  const cpuFlag = useCpu.trim().toLowerCase() === 'y' ? '--cpu' : '';
+
   printHeader();
   colorPrint('🎙️  Generating TTS Audio...', 'cyan');
   console.log(`   Script: ${scriptFile}`);
   console.log(`   Output: ${articleName}_script.wav`);
+  console.log(`   Mode: ${cpuFlag ? 'CPU (slower but safer)' : 'GPU (faster, requires free GPU memory)'}`);
   console.log('\n   This may take several minutes. Please wait...\n');
 
   try {
     process.chdir(ttsServiceDir);
 
     const pythonCmd = join(ttsServiceDir, 'venv', 'bin', 'python');
-    const command = `${pythonCmd} generate_unified.py "${scriptPath}" "${outputPath}"`;
+    const command = `${pythonCmd} generate_unified.py "${scriptPath}" "${outputPath}" ${cpuFlag}`.trim();
     execSync(command, { stdio: 'inherit' });
 
     colorPrint('\n✅ TTS audio generated successfully!', 'green');
@@ -607,6 +613,8 @@ async function runFullPipeline() {
   // Step 2: Generate Audio
   console.log();
   colorPrint('Step 2/3: Generating TTS audio...', 'yellow');
+  // Use CPU mode by default in full pipeline to avoid GPU memory issues
+  const cpuFlag = '--cpu';
   try {
     const scriptPath = join(PATHS.scriptOutput, scriptFile);
     const audioPath = join(PATHS.ttsOutput, audioFile);
@@ -614,7 +622,7 @@ async function runFullPipeline() {
     process.chdir(ttsServiceDir);
     
     const pythonCmd = join(ttsServiceDir, 'venv', 'bin', 'python');
-    execSync(`${pythonCmd} generate_unified.py "${scriptPath}" "${audioPath}"`, { stdio: 'inherit' });
+    execSync(`${pythonCmd} generate_unified.py "${scriptPath}" "${audioPath}" ${cpuFlag}`, { stdio: 'inherit' });
     colorPrint('  ✅ Audio generated', 'green');
   } catch (error) {
     colorPrint('  ❌ Error generating audio!', 'red');

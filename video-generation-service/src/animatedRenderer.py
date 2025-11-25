@@ -164,19 +164,53 @@ def render_title_text_animation(
     return result.convert('RGB')
 
 
+def extract_title_from_scene(scene: Scene) -> str:
+    """
+    Extract title text from scene narration or visual description.
+    """
+    import re
+    
+    # Try to extract from visual description first (e.g., "animated 'MERN' text")
+    visual = scene.visual
+    quoted_match = re.search(r"'([A-Z][^']+)'", visual)
+    if quoted_match:
+        return quoted_match.group(1)
+    
+    # Try to extract capitalized words from visual
+    caps_match = re.search(r'\b([A-Z]{2,})\b', visual)
+    if caps_match:
+        return caps_match.group(1)
+    
+    # Extract from narration - first few key words
+    if scene.narration:
+        # Remove quotes and clean
+        narration_clean = scene.narration.replace('"', '').replace("'", "")
+        # Get first sentence
+        first_sentence = narration_clean.split('.')[0].strip()
+        # Extract key capitalized words
+        words = [w for w in first_sentence.split() if w[0].isupper() and len(w) > 2]
+        if words:
+            # Take first 2-3 words
+            return ' '.join(words[:3])
+    
+    # Default fallback
+    return "Topic"
+
+
 def render_animated_logo_scene(
     scene: Scene,
     frame_time: float
 ) -> Image.Image:
     """
-    Render Scene 1: Animated JavaScript logo with glowing effects.
+    Render Scene 1: Animated logo with glowing effects.
     Text appears from below as per script description.
+    Extracts title from scene content dynamically.
     """
-    # Render animated logo
+    # Render animated logo (generic, not JS-specific)
     bg = render_animated_js_logo(frame_time)
     
-    # Add title text that appears from below (as per script: "Text appears from below")
-    title_text = "What Is JavaScript?"
+    # Extract title from scene content
+    title_text = extract_title_from_scene(scene)
     
     # Only show text after 0.5 seconds
     if frame_time > 0.5:
@@ -265,18 +299,24 @@ def render_geometric_shapes_animation(
     
     # Add title text that fades in one by one (as per script)
     if frame_time > 1.0:
-        # Extract key words from narration
-        words = scene.narration.split()[:5] if scene.narration else ["JavaScript"]
-        title_parts = [w.capitalize() for w in words if len(w) > 3][:4]
+        # Extract title from scene - use same function as logo scene
+        title_text = extract_title_from_scene(scene)
+        
+        # If title is too long, truncate
+        if len(title_text) > 30:
+            title_text = title_text[:27] + "..."
         
         # Fade in text word by word
         text_progress = min(1.0, (frame_time - 1.0) / 3.0)
-        words_to_show = int(len(title_parts) * text_progress)
         
-        title_text = " ".join(title_parts[:words_to_show])
-        if title_text:
+        # Split title into words and show progressively
+        title_words = title_text.split()
+        words_to_show = int(len(title_words) * text_progress)
+        display_text = " ".join(title_words[:words_to_show])
+        
+        if display_text:
             title_font = get_font(64, bold=True)
-            text_bbox = draw.textbbox((0, 0), title_text, font=title_font)
+            text_bbox = draw.textbbox((0, 0), display_text, font=title_font)
             text_w = text_bbox[2] - text_bbox[0]
             text_x = (width - text_w) // 2
             text_y = height // 2 - 50
@@ -284,7 +324,7 @@ def render_geometric_shapes_animation(
             opacity = int(255 * min(1.0, text_progress * 2))
             text_overlay = Image.new('RGBA', bg.size, (0, 0, 0, 0))
             text_draw = ImageDraw.Draw(text_overlay)
-            text_draw.text((text_x, text_y), title_text, fill=(59, 130, 246, opacity), font=title_font)
+            text_draw.text((text_x, text_y), display_text, fill=(59, 130, 246, opacity), font=title_font)
             bg = Image.alpha_composite(bg.convert('RGBA'), text_overlay)
     
     return bg.convert('RGB')
@@ -300,8 +340,8 @@ def render_animated_scene(
     """
     visual_lower = scene.visual.lower()
     
-    # Scene 1: Animated JavaScript logo
-    if "logo" in visual_lower and "javascript" in visual_lower:
+    # Scene 1: Animated logo (any topic, not just JavaScript)
+    if "logo" in visual_lower or ("animated" in visual_lower and "text" in visual_lower):
         return render_animated_logo_scene(scene, frame_time)
     
     # Scene 2: Geometric shapes animation with title

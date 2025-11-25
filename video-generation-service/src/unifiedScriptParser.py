@@ -136,13 +136,26 @@ def parse_unified_script(script_path: str) -> List[Scene]:
         ratio_match = re.search(r'ratio:\s*"([^"]+)"', scene_content)
         ratio = ratio_match.group(1) if ratio_match else "16:9"
         
-        # Extract code block
+        # Extract code block - support multiple formats
         code_block = None
+        # Format 1: code:\n  read_aloud: false\n  content: |\n    ...
         code_match = re.search(r'code:\s*\n\s*read_aloud:\s*(true|false)\s*\n\s*content:\s*\|\s*\n(.*?)(?=\n---|\n\[scene|\Z)', scene_content, re.DOTALL)
         if code_match:
             read_aloud = code_match.group(1).lower() == 'true'
             code_content = code_match.group(2).strip()
+            # Remove markdown code blocks if present
+            code_content = re.sub(r'^```\w*\n', '', code_content, flags=re.MULTILINE)
+            code_content = re.sub(r'\n```\s*$', '', code_content, flags=re.MULTILINE)
             code_block = CodeBlock(read_aloud=read_aloud, content=code_content)
+        else:
+            # Format 2: code.content: |\n    ```javascript\n    ...\n    ```
+            code_content_match = re.search(r'code\.content:\s*\|\s*\n(.*?)(?=\n---|\n\[scene|\Z)', scene_content, re.DOTALL)
+            if code_content_match:
+                code_content = code_content_match.group(1).strip()
+                # Remove markdown code blocks if present
+                code_content = re.sub(r'^```\w*\n', '', code_content, flags=re.MULTILINE)
+                code_content = re.sub(r'\n```\s*$', '', code_content, flags=re.MULTILINE)
+                code_block = CodeBlock(read_aloud=False, content=code_content)
         
         # Extract transitions
         transitions = None

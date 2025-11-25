@@ -66,14 +66,43 @@ def generate_from_unified_script(script_path: str, out_path: str, use_gpu: bool 
     print(f"[TTS] Initializing model: {MODEL}")
     print(f"[TTS] GPU available: {torch.cuda.is_available()}")
     
+    # Check GPU memory if using GPU
+    if use_gpu and torch.cuda.is_available():
+        try:
+            # Get GPU memory info
+            gpu_memory_total = torch.cuda.get_device_properties(0).total_memory / (1024**3)  # GB
+            gpu_memory_allocated = torch.cuda.memory_allocated(0) / (1024**3)  # GB
+            gpu_memory_free = gpu_memory_total - gpu_memory_allocated
+            print(f"[TTS] GPU Memory: {gpu_memory_free:.2f} GB free / {gpu_memory_total:.2f} GB total")
+            
+            # If less than 1GB free, warn and suggest CPU mode
+            if gpu_memory_free < 1.0:
+                print(f"[WARNING] Low GPU memory ({gpu_memory_free:.2f} GB free). Consider using --cpu flag.")
+        except Exception as e:
+            print(f"[WARNING] Could not check GPU memory: {e}")
+    
     # Initialize TTS
     tts = TTS(MODEL)
     
     # Move to GPU if available
     if use_gpu and torch.cuda.is_available():
         device = "cuda"
-        tts.to(device)
-        print(f"[TTS] Using device: {device}")
+        try:
+            # Clear cache before loading
+            torch.cuda.empty_cache()
+            tts.to(device)
+            print(f"[TTS] Using device: {device}")
+        except RuntimeError as e:
+            if "out of memory" in str(e).lower():
+                print(f"[ERROR] GPU out of memory! Switching to CPU mode...")
+                print(f"[INFO] You can use --cpu flag to skip GPU entirely.")
+                device = "cpu"
+                # Clear GPU cache
+                torch.cuda.empty_cache()
+                tts.to(device)
+                print(f"[TTS] Using device: {device} (fallback)")
+            else:
+                raise
     else:
         device = "cpu"
         print(f"[TTS] Using device: {device}")
@@ -83,15 +112,21 @@ def generate_from_unified_script(script_path: str, out_path: str, use_gpu: bool 
     print(f"[TTS] Text length: {len(cleaned_text)} characters")
     
     # Generate audio
-    tts.tts_to_file(
-        text=cleaned_text,
-        speaker_wav=VOICE_WAV,
-        language="en",
-        file_path=out_path,
-        **tts_params
-    )
-    
-    print(f"[TTS] ✅ Audio generated successfully: {out_path}")
+    try:
+        tts.tts_to_file(
+            text=cleaned_text,
+            speaker_wav=VOICE_WAV,
+            language="en",
+            file_path=out_path,
+            **tts_params
+        )
+        
+        print(f"[TTS] ✅ Audio generated successfully: {out_path}")
+    finally:
+        # Clean up GPU memory
+        if device == "cuda" and torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            print(f"[TTS] GPU memory cleared")
 
 
 if __name__ == "__main__":

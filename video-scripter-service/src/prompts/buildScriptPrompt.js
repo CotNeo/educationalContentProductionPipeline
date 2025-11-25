@@ -55,10 +55,20 @@ narration: |
   NO markdown formatting, NO headers, NO brackets.
 
 visual: |
-  Detailed description of what video-generation service should create.
-  Be VERY specific: colors, animations, layout, camera angle, transitions.
-  Describe exactly what appears on screen.
-  Example: "Dark blue gradient background. White code block appears from left with syntax highlighting. Each line animates in as narrator speaks."
+  CRITICAL: Very detailed description of what video-generation service should create.
+  MUST be extremely specific and include:
+  1. Exact component/technology/concept names that appear (for diagrams: MongoDB, Express.js, React, Node.js, etc.)
+  2. Colors, animations, layout, camera angle, transitions
+  3. For diagrams: Explicitly name each box/circle/component (e.g., "MongoDB", "Express.js", "React", "Node.js")
+  4. For code: Mention "code snippet" or "code block" with "syntax highlighting"
+  5. For text: Mention "bullet points", "infographic", or "text overlay"
+  6. Describe exactly what appears on screen, matching the narration content
+  
+  Example: "Flowchart animation showing data moving from MongoDB to Express.js to React to Node.js. Each component appears as a labeled blue box connected by arrows. Arrows highlight paths as they are mentioned."
+  
+  Example: "Dark blue gradient background. White code block appears from left with syntax highlighting showing Express.js route code. Each line animates in as narrator speaks."
+  
+  Example: "Four interconnected circles representing MongoDB, Express.js, React, and Node.js appear on screen. Each circle highlights in blue as the corresponding technology name is spoken."
 
 duration: "Xs"
   Specify exact duration for this scene (e.g., "8s", "15s", "4.5s")
@@ -174,14 +184,75 @@ Break the article content into logical scenes:
    - Smooth flow between scenes
    - Can be part of narration or separate
 
-## 🎬 VISUAL TYPES
+## 🎬 VISUAL TYPES - CRITICAL FORMATTING RULES
 
-Specify visual type in video_settings.animation:
-- **code_block**: Syntax-highlighted code with typing animation
-- **diagram**: Visual diagrams, flowcharts, schemas
-- **containers**: Geometric shapes, boxes, containers
-- **animation**: Motion graphics, animated explanations
-- **text_display**: Text overlays, bullet points, key terms
+The video generation service recognizes these EXACT visual description patterns. Use these keywords in your visual descriptions:
+
+### ✅ STANDARD VISUAL PATTERNS (Use these exact keywords):
+
+1. **CODE SCENES** - Must include:
+   - Keywords: "code", "code snippet", "code block", "syntax highlighting"
+   - Example: "Code snippet appears on screen with syntax highlighting. Camera zooms into the code as it lights up line by line."
+   - Format: Use code.content: section for actual code (or nested code: structure)
+
+2. **DIAGRAM/FLOWCHART SCENES** - Must include:
+   - Keywords: "diagram", "flowchart", "circles", "panels", "scale", "arrows", "flow"
+   - CRITICAL: In visual description, explicitly name the components/entities that appear in the diagram
+   - Example: "Flowchart animation showing data moving from MongoDB to Express.js to React to Node.js. Arrows highlight paths as they are mentioned."
+   - Example: "Four interconnected circles representing MongoDB, Express.js, React, and Node.js appear on screen. Each circle highlights in blue as the corresponding technology name is spoken."
+   - Example: "Diagram showing User Request → Express.js → MongoDB → Response flow. Each step appears as a labeled box connected by arrows."
+   - IMPORTANT: Name specific technologies, components, or concepts in the visual description so the diagram can extract them correctly
+
+3. **TEXT OVERLAY/BULLET SCENES** - Must include:
+   - Keywords: "bullet points", "infographic", "tips", "optimization", "text overlay", "list"
+   - Example: "Infographic appears showing optimization tips in bullet points. Camera zooms into each point as it is highlighted."
+
+4. **TITLE CARD SCENES** - Must include:
+   - Keywords: "title card", "title", "card"
+   - Example: "Bright title card with geometric shapes in blue and white on a light background."
+
+5. **LOGO/ANIMATION SCENES** - Must include:
+   - Keywords: "logo", "animated logo", "animated text" (for text animations)
+   - Example: "Animated JavaScript logo with glowing effects on a dark background."
+   - Example: "Dark gradient background with animated 'MERN' text appearing in white letters."
+
+6. **SCREENSHOT/IMAGE SCENES** - Must include:
+   - Keywords: "screenshot", "image", "app", "screenshots"
+   - Example: "Screenshots of popular apps appear on screen with their key features highlighted."
+
+7. **CALL-TO-ACTION SCENES** - Must include:
+   - Keywords: "call-to-action", "button", "CTA"
+   - Example: "Screen fades out to a call-to-action button that says 'Learn More'."
+
+### ❌ AVOID Vague Descriptions:
+- ❌ "Visual elements appear" (too vague)
+- ❌ "Graphics show on screen" (not specific)
+- ✅ "Code block appears with syntax highlighting" (specific)
+- ✅ "Flowchart diagram showing data flow" (specific)
+
+### 📋 VISUAL DESCRIPTION TEMPLATES:
+
+**For Code:**
+Example: "Code snippet appears on screen with syntax highlighting. Camera zooms into the code as it lights up line by line."
+
+**For Diagrams:**
+Example: "Flowchart animation showing data moving from [Component1] to [Component2] to [Component3]. Arrows highlight paths as they are mentioned."
+OR
+Example: "[Number] interconnected circles representing [Component1], [Component2], [Component3], [Component4] appear on screen. Each circle highlights in blue as the corresponding technology name is spoken."
+OR
+Example: "Diagram showing [Step1] → [Step2] → [Step3] flow. Each step appears as a labeled box connected by arrows."
+CRITICAL: Always explicitly name the components, technologies, or steps in the visual description. The video generator extracts these names to create the diagram.
+
+**For Text/Bullets:**
+Example: "Infographic appears showing [topic] tips in bullet points. Camera zooms into each point as it is highlighted."
+
+**For Title Cards:**
+Example: "Bright title card with [colors] on a [light/dark] background. Text '[Title]' fades in one by one."
+
+**For Logos/Animations:**
+Example: "Animated [Topic] logo with glowing effects on a dark background."
+OR
+Example: "Dark gradient background with animated '[TEXT]' text appearing in white letters from left to right."
 
 ## 📊 QUALITY CHECKLIST
 
@@ -275,17 +346,31 @@ Convert the above article into a **UNIFIED TTS + VIDEO SCRIPT** following the ex
    - Short, conversational sentences
    - Word count matches duration × ${speakingRate} words/sec
 
-3. **Visual (for Video Generation)**:
-   - VERY specific descriptions of what appears on screen
+3. **Visual (for Video Generation)** - CRITICAL:
+   - MUST use standard keywords from VISUAL TYPES section above
    - Include: colors, layout, animations, timing, camera movements
-   - Describe code blocks, diagrams, text overlays in detail
-   - Clear enough for automated video generation
+   - Use exact patterns: "code snippet", "flowchart", "bullet points", "title card", "logo", etc.
+   - Example for code: "Code snippet appears on screen with syntax highlighting..."
+   - Example for diagram: "Flowchart animation showing data moving from X to Y..."
+   - Example for bullets: "Infographic appears showing tips in bullet points..."
+   - Clear enough for automated video generation service to recognize and render correctly
 
 4. **Code Handling**:
    - Extract all code examples from article
-   - Include in \`code.content\` section
-   - Set \`read_aloud: false\` (code is shown, not read)
-   - Describe code appearance in \`visual\` section
+   - Use code.content: format (simpler, preferred):
+     code.content: |
+       [markdown code block with language tag]
+       // Your code here
+       console.log("example");
+       [end code block]
+   - OR use nested format:
+     code:
+       read_aloud: false
+       content: |
+         // Your code here
+         console.log("example");
+   - In visual section, MUST include keywords: "code", "code snippet", "syntax highlighting"
+   - Set read_aloud: false if using nested format (code is shown, not read)
 
 5. **Timing**:
    - Calculate exact duration for each scene
